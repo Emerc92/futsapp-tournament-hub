@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
@@ -48,31 +49,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const token = localStorage.getItem('futsapp_token');
-    if (token) {
-      // In a real app, verify token with backend
-      fetchUserProfile();
-    } else {
-      setLoading(false);
-    }
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        await fetchUserProfile(session.user.id);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = async (userId: string) => {
     try {
-      // Mock API call - replace with actual Supabase call
-      const mockUser: User = {
-        id: '1',
-        nome: 'Mario',
-        cognome: 'Rossi',
-        email: 'mario.rossi@example.com',
-        telefono: '+39 123 456 7890',
-        role: 'player',
-        created_at: new Date().toISOString(),
-        numero_documento: 'RSSMRA85A01H501X',
-        data_nascita: '1985-01-01'
-      };
-      setUser(mockUser);
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching user profile:', error);
+      } else if (data) {
+        setUser({
+          id: data.id,
+          nome: data.nome,
+          cognome: data.cognome,
+          email: data.email,
+          telefono: data.telefono,
+          role: data.role,
+          avatar_url: data.avatar_url,
+          created_at: data.created_at,
+          numero_documento: data.documento,
+          data_nascita: data.dob
+        });
+      }
     } catch (error) {
       console.error('Error fetching user profile:', error);
     } finally {
@@ -83,27 +105,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      // Mock API call - replace with actual Supabase auth
-      console.log('Login attempt:', { email, password });
-      
-      // Simulate API response
-      const mockResponse = {
-        token: 'mock_jwt_token',
-        user: {
-          id: '1',
-          nome: 'Mario',
-          cognome: 'Rossi',
-          email,
-          telefone: '+39 123 456 7890',
-          role: email.includes('organizer') ? 'organizer' : 'player',
-          created_at: new Date().toISOString(),
-          numero_documento: 'RSSMRA85A01H501X',
-          data_nascita: '1985-01-01'
-        } as User
-      };
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      localStorage.setItem('futsapp_token', mockResponse.token);
-      setUser(mockResponse.user);
+      if (error) throw error;
+
+      if (data.user) {
+        await fetchUserProfile(data.user.id);
+      }
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -115,17 +126,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData) => {
     setLoading(true);
     try {
-      // Mock API call - replace with actual Supabase registration
-      console.log('Register attempt:', userData);
-      
-      const mockUser: User = {
-        id: Date.now().toString(),
-        ...userData,
-        created_at: new Date().toISOString()
-      };
+      // First, create the user in Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: userData.email,
+        password: 'tempPassword123!', // You'll want to add password to RegisterData
+      });
 
-      localStorage.setItem('futsapp_token', 'mock_jwt_token');
-      setUser(mockUser);
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Then create the user profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: authData.user.id,
+            nome: userData.nome,
+            cognome: userData.cognome,
+            documento: userData.numero_documento,
+            dob: userData.data_nascita,
+            email: userData.email,
+            telefono: userData.telefono,
+            role: userData.role,
+          });
+
+        if (profileError) throw profileError;
+
+        await fetchUserProfile(authData.user.id);
+      }
     } catch (error) {
       console.error('Registration error:', error);
       throw error;
@@ -134,8 +161,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('futsapp_token');
+  const logout = async () => {
+    await supabase.auth.signOut();
     setUser(null);
   };
 

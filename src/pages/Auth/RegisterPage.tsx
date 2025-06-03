@@ -1,245 +1,249 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Upload } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import Button from '../../components/UI/Button';
-import Card from '../../components/UI/Card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface FormData {
+  nome: string;
+  cognome: string;
+  numero_documento: string;
+  data_nascita: string;
+  email: string;
+  telefono: string;
+  password: string;
+  confirmPassword: string;
+  role: 'player' | 'organizer';
+}
 
 const RegisterPage: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const { register, loading } = useAuth();
+  const [formData, setFormData] = useState<FormData>({
     nome: '',
     cognome: '',
     numero_documento: '',
     data_nascita: '',
     email: '',
     telefono: '',
-    role: 'player' as 'player' | 'organizer'
+    password: '',
+    confirmPassword: '',
+    role: 'player'
   });
-  const [avatar, setAvatar] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string>('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  
-  const { register } = useAuth();
-  const navigate = useNavigate();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Le password non coincidono');
+      return;
+    }
+
+    try {
+      await register({
+        nome: formData.nome,
+        cognome: formData.cognome,
+        numero_documento: formData.numero_documento,
+        data_nascita: formData.data_nascita,
+        email: formData.email,
+        telefono: formData.telefono,
+        role: formData.role
+      });
+      // Navigation is handled in AuthContext after successful registration
+    } catch (error) {
+      setError('Errore durante la registrazione');
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAvatar(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      await register({
-        ...formData,
-        avatar
-      });
-      navigate(formData.role === 'player' ? '/home/player' : '/home/organizer');
-    } catch (err) {
-      setError('Errore durante la registrazione');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50 py-12 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="max-w-2xl mx-auto"
-      >
-        <div className="text-center mb-8">
-          <Link to="/" className="text-3xl font-bold text-blue-600">
-            FutsApp
-          </Link>
-          <p className="text-gray-600 mt-2">Crea il tuo account</p>
-        </div>
-
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         <Card>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl">
-                {error}
-              </div>
-            )}
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold">Registrati su FutsApp</CardTitle>
+            <CardDescription>
+              Crea il tuo account per iniziare
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
 
-            {/* Avatar Upload */}
-            <div className="text-center">
-              <div className="relative inline-block">
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Avatar preview"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-blue-100"
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-1">
+                    Nome *
+                  </label>
+                  <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={formData.nome}
+                    onChange={handleChange}
                   />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-gray-200 border-4 border-blue-100 flex items-center justify-center">
-                    <Upload className="w-8 h-8 text-gray-400" />
-                  </div>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-              </div>
-              <p className="text-sm text-gray-500 mt-2">Clicca per caricare una foto</p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="nome" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nome *
-                </label>
-                <input
-                  id="nome"
-                  name="nome"
-                  type="text"
-                  value={formData.nome}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  required
-                />
+                </div>
+                <div>
+                  <label htmlFor="cognome" className="block text-sm font-medium text-gray-700 mb-1">
+                    Cognome *
+                  </label>
+                  <input
+                    type="text"
+                    id="cognome"
+                    name="cognome"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    value={formData.cognome}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="cognome" className="block text-sm font-medium text-gray-700 mb-2">
-                  Cognome *
+                <label htmlFor="numero_documento" className="block text-sm font-medium text-gray-700 mb-1">
+                  Codice Fiscale *
                 </label>
                 <input
-                  id="cognome"
-                  name="cognome"
                   type="text"
-                  value={formData.cognome}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  id="numero_documento"
+                  name="numero_documento"
                   required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.numero_documento}
+                  onChange={handleChange}
                 />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="numero_documento" className="block text-sm font-medium text-gray-700 mb-2">
-                Codice Fiscale *
-              </label>
-              <input
-                id="numero_documento"
-                name="numero_documento"
-                type="text"
-                value={formData.numero_documento}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="RSSMRA85A01H501X"
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="data_nascita" className="block text-sm font-medium text-gray-700 mb-1">
+                  Data di Nascita *
+                </label>
+                <input
+                  type="date"
+                  id="data_nascita"
+                  name="data_nascita"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.data_nascita}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="data_nascita" className="block text-sm font-medium text-gray-700 mb-2">
-                Data di Nascita *
-              </label>
-              <input
-                id="data_nascita"
-                name="data_nascita"
-                type="date"
-                value={formData.data_nascita}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.email}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
+                  Telefono *
+                </label>
+                <input
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.telefono}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-2">
-                Telefono *
-              </label>
-              <input
-                id="telefono"
-                name="telefono"
-                type="tel"
-                value={formData.telefono}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="+39 123 456 7890"
-                required
-              />
-            </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password *
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.password}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
-                Ruolo *
-              </label>
-              <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Conferma Password *
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                  Ruolo *
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="player">Giocatore</option>
+                  <option value="organizer">Organizzatore</option>
+                </select>
+              </div>
+
+              <Button 
+                type="submit" 
+                className="w-full"
+                disabled={loading}
               >
-                <option value="player">Giocatore</option>
-                <option value="organizer">Organizzatore</option>
-              </select>
+                {loading ? 'Registrazione in corso...' : 'Registrati'}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-600">
+                Hai già un account?{' '}
+                <button
+                  onClick={() => navigate('/login')}
+                  className="text-green-600 hover:text-green-500 font-medium"
+                >
+                  Accedi
+                </button>
+              </p>
             </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-              size="lg"
-            >
-              {loading ? 'Registrazione in corso...' : 'Registrati'}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Hai già un account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-                Accedi qui
-              </Link>
-            </p>
-          </div>
+          </CardContent>
         </Card>
-      </motion.div>
+      </div>
     </div>
   );
 };

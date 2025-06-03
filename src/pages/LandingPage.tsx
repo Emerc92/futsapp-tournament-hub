@@ -1,108 +1,68 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Users, Calendar, Trophy, Shield } from 'lucide-react';
-import Button from '../components/UI/Button';
-import Card from '../components/UI/Card';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, Users, Calendar, Trophy, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const LandingPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleEarlyAccess = async (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Early access signup:', email);
-    // Mock API call
-    setSubmitted(true);
-    setEmail('');
-  };
-
-  const features = [
-    {
-      icon: Users,
-      title: 'Gestione Squadre',
-      description: 'Crea e gestisci le tue squadre con facilità'
-    },
-    {
-      icon: Calendar,
-      title: 'Calendario Partite',
-      description: 'Organizza tornei e tieni traccia di tutti i match'
-    },
-    {
-      icon: Trophy,
-      title: 'Classifiche Live',
-      description: 'Classifiche aggiornate in tempo reale'
-    },
-    {
-      icon: Shield,
-      title: 'Sicurezza Garantita',
-      description: 'Dati protetti e verificati per ogni giocatore'
-    }
-  ];
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center py-6">
             <div className="flex items-center">
-              <div className="text-2xl font-bold text-blue-600">FutsApp</div>
+              <Trophy className="h-8 w-8 text-green-600 mr-3" />
+              <h1 className="text-2xl font-bold text-gray-900">FutsApp</h1>
             </div>
             <div className="flex space-x-4">
-              <Link to="/login">
-                <Button variant="outline">Accedi</Button>
-              </Link>
-              <Link to="/register">
-                <Button>Inizia Gratis</Button>
-              </Link>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/login')}
+              >
+                Accedi
+              </Button>
+              <Button 
+                onClick={() => navigate('/register')}
+              >
+                Inizia Gratis
+              </Button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <motion.h1 
-              className="text-5xl md:text-6xl font-bold text-gray-900 mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Organizza e Gestisci
+            <span className="text-green-600 block">Tornei di Calcio</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            La piattaforma completa per tornei di calcio 5v5, 7v7 e 11v11. 
+            Iscriviti come giocatore o organizza i tuoi tornei.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg" 
+              onClick={() => navigate('/register')}
+              className="text-lg px-8 py-4"
             >
-              La Piattaforma Definitiva per
-              <span className="text-blue-600"> Tornei di Calcio</span>
-            </motion.h1>
-            
-            <motion.p 
-              className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              Inizia Gratis
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              onClick={() => navigate('/login')}
+              className="text-lg px-8 py-4"
             >
-              Organizza tornei di calcio 5v5, 7v7 e 11v11 con facilità. 
-              Gestisci squadre, calendari e classifiche tutto in un'unica app.
-            </motion.p>
-
-            <motion.div 
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <Link to="/register">
-                <Button size="lg" className="min-w-[200px]">
-                  Inizia Gratis Ora
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="outline" size="lg" className="min-w-[200px]">
-                  Accedi al Tuo Account
-                </Button>
-              </Link>
-            </motion.div>
+              Ho già un account
+            </Button>
           </div>
         </div>
       </section>
@@ -112,67 +72,89 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Tutto quello che ti serve per organizzare tornei perfetti
+              Tutto quello che ti serve
             </h2>
-            <p className="text-lg text-gray-600">
-              Strumenti professionali per giocatori e organizzatori
+            <p className="text-xl text-gray-600">
+              Funzionalità complete per giocatori e organizzatori
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-              >
-                <Card className="text-center h-full">
-                  <feature.icon className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
-                </Card>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card>
+              <CardHeader>
+                <Users className="h-12 w-12 text-green-600 mb-4" />
+                <CardTitle>Per Giocatori</CardTitle>
+                <CardDescription>
+                  Trova tornei vicini, iscriviti e gestisci le tue squadre
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Ricerca tornei per zona</li>
+                  <li>• Iscrizione facile e veloce</li>
+                  <li>• Gestione squadre</li>
+                  <li>• Statistiche personali</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <Calendar className="h-12 w-12 text-blue-600 mb-4" />
+                <CardTitle>Per Organizzatori</CardTitle>
+                <CardDescription>
+                  Crea e gestisci tornei con facilità
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Creazione tornei rapida</li>
+                  <li>• Gestione iscrizioni</li>
+                  <li>• Calendario partite</li>
+                  <li>• Comunicazioni automatiche</li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <Trophy className="h-12 w-12 text-yellow-600 mb-4" />
+                <CardTitle>Funzionalità Premium</CardTitle>
+                <CardDescription>
+                  Strumenti avanzati per tornei professionali
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li>• Classifiche automatiche</li>
+                  <li>• Statistiche avanzate</li>
+                  <li>• Notifiche push</li>
+                  <li>• Condivisione social</li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
 
-      {/* Early Access Section */}
-      <section className="py-20 bg-blue-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* CTA Section */}
+      <section className="py-20 bg-green-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Ottieni l'Accesso Anticipato
+            Pronto a iniziare?
           </h2>
-          <p className="text-blue-100 mb-8 text-lg">
-            Iscriviti alla newsletter per essere tra i primi a provare FutsApp
+          <p className="text-xl text-green-100 mb-8">
+            Unisciti alla community di FutsApp e scopri tornei nella tua zona
           </p>
-
-          {submitted ? (
-            <motion.div 
-              className="bg-green-500 text-white p-4 rounded-xl max-w-md mx-auto"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-            >
-              ✅ Grazie! Ti contatteremo presto.
-            </motion.div>
-          ) : (
-            <form onSubmit={handleEarlyAccess} className="max-w-md mx-auto">
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="La tua email"
-                  className="flex-1 px-4 py-3 rounded-xl"
-                  required
-                />
-                <Button type="submit" variant="secondary" className="px-6">
-                  Iscriviti
-                </Button>
-              </div>
-            </form>
-          )}
+          <Button 
+            size="lg" 
+            variant="secondary"
+            onClick={() => navigate('/register')}
+            className="text-lg px-8 py-4"
+          >
+            Registrati Ora
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </section>
 
@@ -180,15 +162,13 @@ const LandingPage: React.FC = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="text-2xl font-bold mb-4">FutsApp</div>
-            <p className="text-gray-400 mb-4">
-              La piattaforma definitiva per tornei di calcio
-            </p>
-            <div className="flex justify-center space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white">Privacy</a>
-              <a href="#" className="text-gray-400 hover:text-white">Termini</a>
-              <a href="#" className="text-gray-400 hover:text-white">Contatti</a>
+            <div className="flex items-center justify-center mb-4">
+              <Trophy className="h-8 w-8 text-green-400 mr-3" />
+              <h3 className="text-2xl font-bold">FutsApp</h3>
             </div>
+            <p className="text-gray-400">
+              La piattaforma per i tornei di calcio in Italia
+            </p>
           </div>
         </div>
       </footer>
