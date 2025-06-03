@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Calendar, Users, Trophy, Settings } from 'lucide-react';
+import { Plus, Trophy, Users, Calendar, Settings } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import Card from '../../components/UI/Card';
-import Button from '../../components/UI/Button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import BottomNavigation from '../../components/Layout/BottomNavigation';
 
 const OrganizerHomePage: React.FC = () => {

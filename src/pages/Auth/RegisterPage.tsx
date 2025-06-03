@@ -50,7 +50,8 @@ const RegisterPage: React.FC = () => {
         data_nascita: formData.data_nascita,
         email: formData.email,
         telefono: formData.telefono,
-        role: formData.role
+        role: formData.role,
+        password: formData.password
       });
       // Navigation is handled in AuthContext after successful registration
     } catch (error) {
