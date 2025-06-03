@@ -1,27 +1,42 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { login, loading } = useAuth();
+  const { login, loading, user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'player' ? '/home/player' : '/home/organizer');
+    }
+  }, [user, navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
+    if (!formData.email || !formData.password) {
+      setError('Tutti i campi sono obbligatori');
+      return;
+    }
+
     try {
       await login(formData.email, formData.password);
-      // Navigation is handled in AuthContext after successful login
-    } catch (error) {
-      setError('Credenziali non valide');
+      // Redirect is handled automatically in AuthContext
+    } catch (error: any) {
+      setError(error.message || 'Errore durante il login');
     }
   };
 
@@ -45,9 +60,9 @@ const LoginPage: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                  {error}
-                </div>
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
               
               <div>
@@ -62,6 +77,7 @@ const LoginPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -77,6 +93,7 @@ const LoginPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.password}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -85,7 +102,14 @@ const LoginPage: React.FC = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Accesso in corso...' : 'Accedi'}
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Accesso in corso...
+                  </>
+                ) : (
+                  'Accedi'
+                )}
               </Button>
             </form>
 
@@ -95,6 +119,7 @@ const LoginPage: React.FC = () => {
                 <button
                   onClick={() => navigate('/register')}
                   className="text-green-600 hover:text-green-500 font-medium"
+                  disabled={loading}
                 >
                   Registrati
                 </button>

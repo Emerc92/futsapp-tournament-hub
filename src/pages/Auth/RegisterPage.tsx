@@ -1,9 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2 } from 'lucide-react';
 
 interface FormData {
   nome: string;
@@ -19,7 +21,7 @@ interface FormData {
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const { register, loading } = useAuth();
+  const { register, loading, user } = useAuth();
   const [formData, setFormData] = useState<FormData>({
     nome: '',
     cognome: '',
@@ -33,12 +35,40 @@ const RegisterPage: React.FC = () => {
   });
   const [error, setError] = useState('');
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(user.role === 'player' ? '/home/player' : '/home/organizer');
+    }
+  }, [user, navigate]);
+
+  const validateForm = () => {
+    if (!formData.nome || !formData.cognome || !formData.email || !formData.password) {
+      return 'Tutti i campi obbligatori devono essere compilati';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      return 'Le password non coincidono';
+    }
+
+    if (formData.password.length < 6) {
+      return 'La password deve essere di almeno 6 caratteri';
+    }
+
+    if (!formData.email.includes('@')) {
+      return 'Inserisci un indirizzo email valido';
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Le password non coincidono');
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -53,9 +83,9 @@ const RegisterPage: React.FC = () => {
         role: formData.role,
         password: formData.password
       });
-      // Navigation is handled in AuthContext after successful registration
-    } catch (error) {
-      setError('Errore durante la registrazione');
+      // Redirect is handled automatically in AuthContext
+    } catch (error: any) {
+      setError(error.message || 'Errore durante la registrazione');
     }
   };
 
@@ -79,9 +109,9 @@ const RegisterPage: React.FC = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                  {error}
-                </div>
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
 
               <div className="grid grid-cols-2 gap-4">
@@ -97,6 +127,7 @@ const RegisterPage: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     value={formData.nome}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
                 <div>
@@ -111,6 +142,7 @@ const RegisterPage: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                     value={formData.cognome}
                     onChange={handleChange}
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -127,6 +159,7 @@ const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.numero_documento}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -142,6 +175,7 @@ const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.data_nascita}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -157,6 +191,7 @@ const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -172,6 +207,7 @@ const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.telefono}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -184,9 +220,11 @@ const RegisterPage: React.FC = () => {
                   id="password"
                   name="password"
                   required
+                  minLength={6}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.password}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -199,9 +237,11 @@ const RegisterPage: React.FC = () => {
                   id="confirmPassword"
                   name="confirmPassword"
                   required
+                  minLength={6}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -216,6 +256,7 @@ const RegisterPage: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                   value={formData.role}
                   onChange={handleChange}
+                  disabled={loading}
                 >
                   <option value="player">Giocatore</option>
                   <option value="organizer">Organizzatore</option>
@@ -227,7 +268,14 @@ const RegisterPage: React.FC = () => {
                 className="w-full"
                 disabled={loading}
               >
-                {loading ? 'Registrazione in corso...' : 'Registrati'}
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Registrazione in corso...
+                  </>
+                ) : (
+                  'Registrati'
+                )}
               </Button>
             </form>
 
@@ -237,6 +285,7 @@ const RegisterPage: React.FC = () => {
                 <button
                   onClick={() => navigate('/login')}
                   className="text-green-600 hover:text-green-500 font-medium"
+                  disabled={loading}
                 >
                   Accedi
                 </button>

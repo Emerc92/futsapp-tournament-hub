@@ -1,6 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
 
 interface User {
   id: string;
@@ -47,23 +49,28 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        fetchUserProfile(session.user.id);
+        // Defer the user profile fetch to avoid deadlock
+        setTimeout(() => {
+          fetchUserProfile(session.user.id);
+        }, 0);
       } else {
+        setUser(null);
         setLoading(false);
       }
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        await fetchUserProfile(session.user.id);
+        fetchUserProfile(session.user.id);
       } else {
-        setUser(null);
         setLoading(false);
       }
     });
@@ -81,19 +88,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching user profile:', error);
+        toast({
+          title: "Errore",
+          description: "Impossibile caricare il profilo utente",
+          variant: "destructive"
+        });
       } else if (data) {
-        setUser({
+        const userProfile = {
           id: data.id,
           nome: data.nome,
           cognome: data.cognome,
           email: data.email,
           telefono: data.telefono,
           role: data.role,
-          avatar_url: undefined, // Not in database yet
+          avatar_url: data.avatar_url,
           created_at: data.created_at,
           numero_documento: data.documento,
           data_nascita: data.dob
-        });
+        };
+        setUser(userProfile);
+        
+        // Auto-redirect after successful login/register
+        if (window.location.pathname === '/login' || window.location.pathname === '/register') {
+          navigate(userProfile.role === 'player' ? '/home/player' : '/home/organizer');
+        }
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -110,16 +128,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          throw new Error('Email o password non corretti');
+        }
+        throw error;
+      }
 
       if (data.user) {
         await fetchUserProfile(data.user.id);
+        toast({
+          title: "Accesso effettuato",
+          description: "Benvenuto su FutsApp!",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
-      throw error;
-    } finally {
       setLoading(false);
+      throw error;
     }
   };
 
@@ -130,15 +156,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`
+        }
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        if (authError.message.includes('User already registered')) {
+          throw new Error('Questo indirizzo email è già registrato');
+        }
+        throw authError;
+      }
 
       if (authData.user) {
-        // Then create the user profile
+        // Then create the user profile with upsert
         const { error: profileError } = await supabase
           .from('users')
-          .insert({
+          .upsert({
             id: authData.user.id,
             nome: userData.nome,
             cognome: userData.cognome,
@@ -147,23 +181,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             email: userData.email,
             telefono: userData.telefono,
             role: userData.role,
+            created_at: new Date().toISOString()
+          }, {
+            onConflict: 'id'
           });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          throw new Error('Errore durante la creazione del profilo');
+        }
 
         await fetchUserProfile(authData.user.id);
+        toast({
+          title: "Registrazione completata",
+          description: "Benvenuto su FutsApp! Il tuo account è stato creato con successo.",
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      throw error;
-    } finally {
       setLoading(false);
+      throw error;
     }
   };
 
   const logout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    navigate('/');
+    toast({
+      title: "Logout effettuato",
+      description: "Arrivederci!",
+    });
   };
 
   const value = {
