@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Users, Calendar, BarChart3, Settings, Plus, Edit, Trash2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import Card from '../../components/UI/Card';
-import Button from '../../components/UI/Button';
+import {Card} from '../../components/ui/card';
+import {Button} from '../../components/ui/button';
 
 const TournamentManagementPage: React.FC = () => {
   const { id } = useParams();
@@ -70,7 +70,7 @@ const TournamentManagementPage: React.FC = () => {
           </div>
           <Settings className="w-6 h-6" />
         </div>
-        
+
         {/* Stats Bar */}
         <div className="px-4 pb-4">
           <div className="grid grid-cols-3 gap-4">
@@ -140,8 +140,8 @@ const TournamentManagementPage: React.FC = () => {
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 rounded-lg text-xs ${
-                        team.paid 
-                          ? 'bg-green-100 text-green-800' 
+                        team.paid
+                          ? 'bg-green-100 text-green-800'
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {team.paid ? 'Pagato' : 'Non pagato'}
