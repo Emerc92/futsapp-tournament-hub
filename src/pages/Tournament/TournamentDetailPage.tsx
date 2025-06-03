@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Calendar, Users, Trophy, Settings } from 'lucide-react';
-import Card from '../../components/UI/Card';
-import Button from '../../components/UI/Button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useAuth } from '../../contexts/AuthContext';
 
 const TournamentDetailPage: React.FC = () => {
@@ -145,7 +145,7 @@ const TournamentDetailPage: React.FC = () => {
         >
           {activeTab === 'info' && (
             <div className="space-y-4">
-              <Card>
+              <Card className="p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">Dettagli Torneo</h3>
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
@@ -167,7 +167,7 @@ const TournamentDetailPage: React.FC = () => {
                 </div>
               </Card>
 
-              <Card>
+              <Card className="p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">Descrizione</h3>
                 <p className="text-gray-700 mb-4">{tournament.description}</p>
                 
@@ -178,7 +178,7 @@ const TournamentDetailPage: React.FC = () => {
                 <p className="text-gray-700">{tournament.prizes}</p>
               </Card>
 
-              <Card>
+              <Card className="p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">Posizione</h3>
                 <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center">
                   <span className="text-gray-500">Mappa Google Maps</span>
@@ -197,7 +197,7 @@ const TournamentDetailPage: React.FC = () => {
               </div>
               
               {teams.map((team) => (
-                <Card key={team.id}>
+                <Card key={team.id} className="p-4">
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-semibold text-gray-900">{team.name}</h4>
@@ -218,7 +218,7 @@ const TournamentDetailPage: React.FC = () => {
               <h3 className="text-lg font-semibold">Calendario Partite</h3>
               
               {matches.map((match) => (
-                <Card key={match.id}>
+                <Card key={match.id} className="p-4">
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="flex items-center space-x-2 mb-2">
@@ -256,7 +256,7 @@ const TournamentDetailPage: React.FC = () => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Classifica</h3>
               
-              <Card>
+              <Card className="p-4">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
