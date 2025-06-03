@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, MapPin, Calendar, Users, Trophy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import Card from '../../components/UI/Card';
-import Button from '../../components/UI/Button';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 const CreateTournamentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ const CreateTournamentPage: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card>
+          <Card className="p-4">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Info */}
               <div>
