@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { MapPin, Trophy, Users, Calendar } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import Card from '../../components/UI/Card';
-import Button from '../../components/UI/Button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import BottomNavigation from '../../components/Layout/BottomNavigation';
 
 const PlayerHomePage: React.FC = () => {
@@ -124,27 +124,29 @@ const PlayerHomePage: React.FC = () => {
                 transition={{ delay: 0.5 + index * 0.1 }}
               >
                 <Link to={`/tournaments/${tournament.id}`}>
-                  <Card className="hover:shadow-xl transition-all">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-gray-900">{tournament.name}</h3>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm">
-                        {tournament.type}
-                      </span>
-                    </div>
-                    <div className="flex items-center text-gray-600 text-sm space-x-4">
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="w-4 h-4" />
-                        <span>{tournament.location}</span>
+                  <Card className="bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-all cursor-pointer">
+                    <CardContent className="p-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-semibold text-gray-900">{tournament.name}</h3>
+                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm">
+                          {tournament.type}
+                        </span>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(tournament.date).toLocaleDateString('it-IT')}</span>
+                      <div className="flex items-center text-gray-600 text-sm space-x-4">
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="w-4 h-4" />
+                          <span>{tournament.location}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{new Date(tournament.date).toLocaleDateString('it-IT')}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-4 h-4" />
+                          <span>{tournament.teams} squadre</span>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-4 h-4" />
-                        <span>{tournament.teams} squadre</span>
-                      </div>
-                    </div>
+                    </CardContent>
                   </Card>
                 </Link>
               </motion.div>
@@ -159,21 +161,23 @@ const PlayerHomePage: React.FC = () => {
           transition={{ delay: 0.7 }}
         >
           <h2 className="text-xl font-bold text-gray-900 mb-4">Attività Recente</h2>
-          <Card>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Trophy className="w-5 h-5 text-yellow-500" />
-                <span className="text-gray-700">Vittoria nel Torneo Primavera 2024</span>
+          <Card className="bg-white rounded-2xl shadow-lg p-4">
+            <CardContent className="p-0">
+              <div className="space-y-3">
+                <div className="flex items-center space-x-3">
+                  <Trophy className="w-5 h-5 text-yellow-500" />
+                  <span className="text-gray-700">Vittoria nel Torneo Primavera 2024</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Users className="w-5 h-5 text-blue-500" />
+                  <span className="text-gray-700">Iscrizione al Torneo Estivo 2024</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Calendar className="w-5 h-5 text-green-500" />
+                  <span className="text-gray-700">Prossima partita: 15 Luglio</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Users className="w-5 h-5 text-blue-500" />
-                <span className="text-gray-700">Iscrizione al Torneo Estivo 2024</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Calendar className="w-5 h-5 text-green-500" />
-                <span className="text-gray-700">Prossima partita: 15 Luglio</span>
-              </div>
-            </div>
+            </CardContent>
           </Card>
         </motion.div>
       </div>

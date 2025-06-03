@@ -31,7 +31,7 @@ interface RegisterData {
   email: string;
   telefono: string;
   role: 'player' | 'organizer';
-  avatar?: File;
+  password: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           email: data.email,
           telefono: data.telefono,
           role: data.role,
-          avatar_url: data.avatar_url,
+          avatar_url: undefined, // Not in database yet
           created_at: data.created_at,
           numero_documento: data.documento,
           data_nascita: data.dob
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // First, create the user in Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
-        password: 'tempPassword123!', // You'll want to add password to RegisterData
+        password: userData.password,
       });
 
       if (authError) throw authError;

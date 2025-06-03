@@ -4,8 +4,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Edit, Camera, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import Card from '../components/UI/Card';
-import Button from '../components/UI/Button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import BottomNavigation from '../components/Layout/BottomNavigation';
 
 const ProfilePage: React.FC = () => {
@@ -56,102 +56,112 @@ const ProfilePage: React.FC = () => {
 
       <div className="p-4 space-y-4">
         {/* Personal Info */}
-        <Card>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">Informazioni Personali</h3>
-            <Button size="sm" variant="outline" onClick={() => setIsEditing(!isEditing)}>
-              <Edit className="w-4 h-4 mr-1" />
-              Modifica
-            </Button>
-          </div>
-          
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm text-gray-500">Email</label>
-              <p className="font-medium">{user.email}</p>
+        <Card className="bg-white rounded-2xl shadow-lg p-4">
+          <CardContent className="p-0">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Informazioni Personali</h3>
+              <Button size="sm" variant="outline" onClick={() => setIsEditing(!isEditing)}>
+                <Edit className="w-4 h-4 mr-1" />
+                Modifica
+              </Button>
             </div>
-            <div>
-              <label className="text-sm text-gray-500">Telefono</label>
-              <p className="font-medium">{user.telefono}</p>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-sm text-gray-500">Email</label>
+                <p className="font-medium">{user.email}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Telefono</label>
+                <p className="font-medium">{user.telefono}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Codice Fiscale</label>
+                <p className="font-medium">{user.numero_documento}</p>
+              </div>
+              <div>
+                <label className="text-sm text-gray-500">Data di Nascita</label>
+                <p className="font-medium">{new Date(user.data_nascita).toLocaleDateString('it-IT')}</p>
+              </div>
             </div>
-            <div>
-              <label className="text-sm text-gray-500">Codice Fiscale</label>
-              <p className="font-medium">{user.numero_documento}</p>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Data di Nascita</label>
-              <p className="font-medium">{new Date(user.data_nascita).toLocaleDateString('it-IT')}</p>
-            </div>
-          </div>
+          </CardContent>
         </Card>
 
         {/* Stats */}
         {user.role === 'player' && (
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Le Mie Statistiche</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">15</div>
-                <div className="text-sm text-gray-600">Tornei</div>
+          <Card className="bg-white rounded-2xl shadow-lg p-4">
+            <CardContent className="p-0">
+              <h3 className="text-lg font-semibold mb-4">Le Mie Statistiche</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">15</div>
+                  <div className="text-sm text-gray-600">Tornei</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">8</div>
+                  <div className="text-sm text-gray-600">Vittorie</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">23</div>
+                  <div className="text-sm text-gray-600">Gol</div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">8</div>
-                <div className="text-sm text-gray-600">Vittorie</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">23</div>
-                <div className="text-sm text-gray-600">Gol</div>
-              </div>
-            </div>
+            </CardContent>
           </Card>
         )}
 
         {user.role === 'organizer' && (
-          <Card>
-            <h3 className="text-lg font-semibold mb-4">Le Mie Statistiche</h3>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">12</div>
-                <div className="text-sm text-gray-600">Tornei Creati</div>
+          <Card className="bg-white rounded-2xl shadow-lg p-4">
+            <CardContent className="p-0">
+              <h3 className="text-lg font-semibold mb-4">Le Mie Statistiche</h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">12</div>
+                  <div className="text-sm text-gray-600">Tornei Creati</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">€2,400</div>
+                  <div className="text-sm text-gray-600">Incassi Totali</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-yellow-600">156</div>
+                  <div className="text-sm text-gray-600">Partecipanti</div>
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">€2,400</div>
-                <div className="text-sm text-gray-600">Incassi Totali</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-yellow-600">156</div>
-                <div className="text-sm text-gray-600">Partecipanti</div>
-              </div>
-            </div>
+            </CardContent>
           </Card>
         )}
 
         {/* Settings */}
-        <Card>
-          <h3 className="text-lg font-semibold mb-4">Impostazioni</h3>
-          <div className="space-y-3">
-            <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              Notifiche Push
-            </button>
-            <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              Privacy e Sicurezza
-            </button>
-            <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
-              Supporto
-            </button>
-          </div>
+        <Card className="bg-white rounded-2xl shadow-lg p-4">
+          <CardContent className="p-0">
+            <h3 className="text-lg font-semibold mb-4">Impostazioni</h3>
+            <div className="space-y-3">
+              <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                Notifiche Push
+              </button>
+              <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                Privacy e Sicurezza
+              </button>
+              <button className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                Supporto
+              </button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Logout */}
-        <Card>
-          <Button
-            variant="outline"
-            className="w-full text-red-600 border-red-200 hover:bg-red-50"
-            onClick={logout}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Esci dall'Account
-          </Button>
+        <Card className="bg-white rounded-2xl shadow-lg p-4">
+          <CardContent className="p-0">
+            <Button
+              variant="outline"
+              className="w-full text-red-600 border-red-200 hover:bg-red-50"
+              onClick={logout}
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Esci dall'Account
+            </Button>
+          </CardContent>
         </Card>
       </div>
 
