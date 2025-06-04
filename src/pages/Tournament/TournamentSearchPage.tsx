@@ -4,14 +4,15 @@ import { Search, MapPin, Filter, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface Tournament {
   id: string;
-  nome: string;
-  tipo: '5' | '7' | '11';
+  name: string;
+  tournament_type: 'elimination' | 'round_robin' | 'mixed';
   location: string;
-  date: string;
-  fee: number;
+  start_date: string;
+  entry_fee: number;
   organizer_id: string;
 }
 
@@ -21,6 +22,7 @@ const TournamentSearchPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('all');
   const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Get user's location
@@ -46,15 +48,26 @@ const TournamentSearchPage: React.FC = () => {
       const { data, error } = await supabase
         .from('tournaments')
         .select('*')
-        .order('date', { ascending: true });
+        .eq('status', 'open')
+        .order('start_date', { ascending: true });
 
       if (error) {
         console.error('Error fetching tournaments:', error);
+        toast({
+          title: "Errore",
+          description: "Impossibile caricare i tornei",
+          variant: "destructive"
+        });
       } else {
         setTournaments(data || []);
       }
     } catch (error) {
       console.error('Error fetching tournaments:', error);
+      toast({
+        title: "Errore",
+        description: "Errore di connessione",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
@@ -65,12 +78,16 @@ const TournamentSearchPage: React.FC = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        alert('Devi essere loggato per iscriverti');
+        toast({
+          title: "Accesso richiesto",
+          description: "Devi essere loggato per iscriverti a un torneo",
+          variant: "destructive"
+        });
         return;
       }
 
       const { error } = await supabase
-        .from('registrations')
+        .from('tournament_registrations')
         .insert({
           tournament_id: tournamentId,
           user_id: user.id,
@@ -79,20 +96,39 @@ const TournamentSearchPage: React.FC = () => {
 
       if (error) {
         console.error('Error registering for tournament:', error);
-        alert('Errore durante l\'iscrizione');
+        if (error.code === '23505') {
+          toast({
+            title: "Già iscritto",
+            description: "Sei già iscritto a questo torneo",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Errore",
+            description: "Errore durante l'iscrizione",
+            variant: "destructive"
+          });
+        }
       } else {
-        alert('Iscrizione completata con successo!');
+        toast({
+          title: "Iscrizione completata",
+          description: "Ti sei iscritto con successo al torneo!",
+        });
       }
     } catch (error) {
       console.error('Error registering for tournament:', error);
-      alert('Errore durante l\'iscrizione');
+      toast({
+        title: "Errore",
+        description: "Errore durante l'iscrizione",
+        variant: "destructive"
+      });
     }
   };
 
   const filteredTournaments = tournaments.filter(tournament => {
-    const matchesSearch = tournament.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = tournament.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tournament.location.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesType = selectedType === 'all' || tournament.tipo === selectedType;
+    const matchesType = selectedType === 'all' || tournament.tournament_type === selectedType;
     return matchesSearch && matchesType;
   });
 
@@ -135,9 +171,9 @@ const TournamentSearchPage: React.FC = () => {
                 className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
               >
                 <option value="all">Tutti i tipi</option>
-                <option value="5">Calcio a 5</option>
-                <option value="7">Calcio a 7</option>
-                <option value="11">Calcio a 11</option>
+                <option value="elimination">Eliminazione</option>
+                <option value="round_robin">Girone</option>
+                <option value="mixed">Misto</option>
               </select>
               <Button variant="outline">
                 <Filter className="h-4 w-4 mr-2" />
@@ -158,9 +194,9 @@ const TournamentSearchPage: React.FC = () => {
               <Card key={tournament.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg">{tournament.nome}</CardTitle>
+                    <CardTitle className="text-lg">{tournament.name}</CardTitle>
                     <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                      {tournament.tipo}v{tournament.tipo}
+                      {tournament.tournament_type}
                     </span>
                   </div>
                   <CardDescription>
@@ -170,14 +206,14 @@ const TournamentSearchPage: React.FC = () => {
                     </div>
                     <div className="flex items-center text-sm text-gray-500 mt-1">
                       <Calendar className="h-4 w-4 mr-1" />
-                      {new Date(tournament.date).toLocaleDateString('it-IT')}
+                      {new Date(tournament.start_date).toLocaleDateString('it-IT')}
                     </div>
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between items-center">
                     <div>
-                      <span className="text-2xl font-bold text-green-600">€{tournament.fee}</span>
+                      <span className="text-2xl font-bold text-green-600">€{tournament.entry_fee}</span>
                       <span className="text-sm text-gray-500 ml-1">per squadra</span>
                     </div>
                     <Button 

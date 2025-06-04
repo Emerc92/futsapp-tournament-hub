@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 interface User {
   id: string;
@@ -157,7 +157,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         password: userData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            nome: userData.nome,
+            cognome: userData.cognome,
+            documento: userData.numero_documento,
+            dob: userData.data_nascita,
+            telefono: userData.telefono,
+            role: userData.role
+          }
         }
       });
 
@@ -169,28 +177,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (authData.user) {
-        // Then create the user profile with upsert
-        const { error: profileError } = await supabase
-          .from('users')
-          .upsert({
-            id: authData.user.id,
-            nome: userData.nome,
-            cognome: userData.cognome,
-            documento: userData.numero_documento,
-            dob: userData.data_nascita,
-            email: userData.email,
-            telefono: userData.telefono,
-            role: userData.role,
-            created_at: new Date().toISOString()
-          }, {
-            onConflict: 'id'
-          });
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          throw new Error('Errore durante la creazione del profilo');
-        }
-
+        // The trigger will automatically create the user profile
         await fetchUserProfile(authData.user.id);
         toast({
           title: "Registrazione completata",
