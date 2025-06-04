@@ -160,7 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Attempting registration for:', userData.email);
       
-      // First, create the user in Auth with correct metadata field names
+      // First, create the user in Auth with correct metadata field names matching the trigger
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
