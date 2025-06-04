@@ -55,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state change:', event, session);
       if (session) {
         // Defer the user profile fetch to avoid deadlock
         setTimeout(() => {
@@ -80,6 +81,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('Fetching user profile for:', userId);
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -94,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           variant: "destructive"
         });
       } else if (data) {
+        console.log('User profile fetched:', data);
         const userProfile = {
           id: data.id,
           nome: data.nome,
@@ -123,12 +126,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
+      console.log('Attempting login for:', email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
         if (error.message.includes('Invalid login credentials')) {
           throw new Error('Email o password non corretti');
         }
@@ -136,6 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
+        console.log('Login successful for user:', data.user.id);
         await fetchUserProfile(data.user.id);
         toast({
           title: "Accesso effettuato",
@@ -152,7 +158,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (userData: RegisterData) => {
     setLoading(true);
     try {
-      // First, create the user in Auth
+      console.log('Attempting registration for:', userData.email);
+      
+      // First, create the user in Auth with correct metadata field names
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
@@ -170,6 +178,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (authError) {
+        console.error('Auth signup error:', authError);
         if (authError.message.includes('User already registered')) {
           throw new Error('Questo indirizzo email è già registrato');
         }
@@ -177,6 +186,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (authData.user) {
+        console.log('Auth user created:', authData.user.id);
+        
+        // Wait a moment for the trigger to complete
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
         // The trigger will automatically create the user profile
         await fetchUserProfile(authData.user.id);
         toast({
@@ -192,6 +206,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    console.log('Logging out user');
     await supabase.auth.signOut();
     setUser(null);
     navigate('/');
