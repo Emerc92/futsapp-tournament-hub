@@ -9,7 +9,158 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      tournament_registrations: {
+        Row: {
+          id: string
+          paid: boolean | null
+          payment_date: string | null
+          registration_date: string | null
+          tournament_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          paid?: boolean | null
+          payment_date?: string | null
+          registration_date?: string | null
+          tournament_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          paid?: boolean | null
+          payment_date?: string | null
+          registration_date?: string | null
+          tournament_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournament_registrations_tournament_id_fkey"
+            columns: ["tournament_id"]
+            isOneToOne: false
+            referencedRelation: "tournaments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tournament_registrations_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tournaments: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string
+          entry_fee: number | null
+          id: string
+          image_url: string | null
+          location: string
+          max_teams: number
+          name: string
+          organizer_id: string
+          prize_pool: number | null
+          registration_deadline: string
+          rules: Json | null
+          start_date: string
+          status: Database["public"]["Enums"]["tournament_status"]
+          tournament_type: Database["public"]["Enums"]["tournament_type"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date: string
+          entry_fee?: number | null
+          id?: string
+          image_url?: string | null
+          location: string
+          max_teams: number
+          name: string
+          organizer_id: string
+          prize_pool?: number | null
+          registration_deadline: string
+          rules?: Json | null
+          start_date: string
+          status?: Database["public"]["Enums"]["tournament_status"]
+          tournament_type?: Database["public"]["Enums"]["tournament_type"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string
+          entry_fee?: number | null
+          id?: string
+          image_url?: string | null
+          location?: string
+          max_teams?: number
+          name?: string
+          organizer_id?: string
+          prize_pool?: number | null
+          registration_deadline?: string
+          rules?: Json | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["tournament_status"]
+          tournament_type?: Database["public"]["Enums"]["tournament_type"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tournaments_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          cognome: string
+          created_at: string | null
+          dob: string
+          documento: string
+          email: string
+          id: string
+          nome: string
+          role: Database["public"]["Enums"]["user_role"]
+          telefono: string
+          updated_at: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          cognome: string
+          created_at?: string | null
+          dob: string
+          documento: string
+          email: string
+          id: string
+          nome: string
+          role?: Database["public"]["Enums"]["user_role"]
+          telefono: string
+          updated_at?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          cognome?: string
+          created_at?: string | null
+          dob?: string
+          documento?: string
+          email?: string
+          id?: string
+          nome?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          telefono?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +169,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      tournament_status:
+        | "draft"
+        | "open"
+        | "closed"
+        | "ongoing"
+        | "completed"
+        | "cancelled"
+      tournament_type: "elimination" | "round_robin" | "mixed"
+      user_role: "player" | "organizer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +292,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      tournament_status: [
+        "draft",
+        "open",
+        "closed",
+        "ongoing",
+        "completed",
+        "cancelled",
+      ],
+      tournament_type: ["elimination", "round_robin", "mixed"],
+      user_role: ["player", "organizer"],
+    },
   },
 } as const
