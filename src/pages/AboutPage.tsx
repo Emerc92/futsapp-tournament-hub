@@ -49,7 +49,7 @@ const AboutPage: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">La nostra storia</h2>
             
             <p className="text-gray-700 mb-6 text-lg leading-relaxed">
-              FutsApp nasce nel 2023 dall'esperienza diretta di un gruppo di appassionati di calcio che, 
+              FutsApp nasce nel 2025 dall'esperienza diretta di un gruppo di appassionati di calcio che, 
               come tanti altri, si trovavano a dover gestire tornei amatoriali con strumenti inadeguati. 
               Fogli Excel infiniti, gruppi WhatsApp caotici, calendari scritti a mano: tutto questo 
               apparteneva al passato per noi.
@@ -57,15 +57,15 @@ const AboutPage: React.FC = () => {
 
             <p className="text-gray-700 mb-6 text-lg leading-relaxed">
               L'idea è nata durante l'organizzazione di un torneo di calcio a 5 nel nostro quartiere. 
-              Dopo ore spese a coordinare 16 squadre, gestire iscrizioni e comunicare risultati, 
+              Dopo ore spese a coordinare squadre, gestire iscrizioni e comunicare risultati, 
               ci siamo resi conto che serviva una soluzione moderna, semplice e alla portata di tutti.
             </p>
 
             <p className="text-gray-700 mb-8 text-lg leading-relaxed">
-              Così è nato FutsApp: una piattaforma pensata da giocatori per giocatori, 
+              Così è nata FutsApp: una piattaforma pensata da giocatori per giocatori, 
               che semplifica ogni aspetto dell'organizzazione di tornei di calcio. 
               Dal calcio a 5 al calcio a 11, dalla Serie A amatoriale al torneo tra amici: 
-              FutsApp è la casa digitale del calcio italiano.
+              FutsApp è la casa digitale dei tornei amatoriali.
             </p>
           </div>
         </div>
@@ -137,7 +137,7 @@ const AboutPage: React.FC = () => {
             che lavora ogni giorno per migliorare l'esperienza dei tornei amatoriali in Italia.
           </p>
           <p className="text-lg text-gray-700">
-            Il nostro obiettivo è semplice: rendere il calcio più accessibile, 
+            Il nostro obiettivo è semplice: rendere il mondo dei tornei amatoriali più accessibile, 
             organizzato e divertente per tutti.
           </p>
         </div>
