@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trophy, Users, Calendar, Settings } from 'lucide-react';
@@ -9,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import BottomNavigation from '../../components/Layout/BottomNavigation';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Layout } from '@/components/Layout/Layout';
+import { User } from 'lucide-react';
 
 interface Tournament {
   TOUR_UUID: string;
@@ -97,191 +98,175 @@ const OrganizerHomePage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center space-x-4"
-        >
-          {user?.USER_AURL ? (
-            <img
-              src={user.USER_AURL}
-              alt="Profile"
-              className="w-16 h-16 rounded-full border-3 border-white"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center">
-              <Settings className="w-8 h-8" />
-            </div>
-          )}
-          <div>
-            <h1 className="text-2xl font-bold">
-              Ciao, {user?.USER_NAME} {user?.USER_COGN}!
-            </h1>
-            <p className="text-green-100">Organizzatore</p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-3 gap-4 mt-6"
-        >
-          <div className="text-center">
-            <div className="text-2xl font-bold">{stats.totalTournaments}</div>
-            <div className="text-sm text-green-100">Tornei</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">€{stats.totalRevenue}</div>
-            <div className="text-sm text-green-100">Incassi Potenziali</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">{stats.totalParticipants}</div>
-            <div className="text-sm text-green-100">Partecipanti</div>
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="p-6 space-y-6">
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Link to="/organizer/create">
-            <Button className="w-full flex items-center justify-center space-x-2" size="lg">
-              <Plus className="w-5 h-5" />
-              <span>Crea Nuovo Torneo</span>
-            </Button>
-          </Link>
-        </motion.div>
-
-        {/* My Tournaments */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">I Miei Tornei</h2>
-          
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="text-gray-500">Caricamento tornei...</div>
-            </div>
-          ) : tournaments.length === 0 ? (
-            <Card className="p-6 text-center">
-              <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Nessun torneo creato</h3>
-              <p className="text-gray-600 mb-4">Inizia creando il tuo primo torneo!</p>
-              <Link to="/organizer/create">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Crea Torneo
-                </Button>
-              </Link>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {tournaments.map((tournament, index) => (
-                <motion.div
-                  key={tournament.TOUR_UUID}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                >
-                  <Link to={`/organizer/tournament/${tournament.TOUR_UUID}`}>
-                    <Card className="hover:shadow-xl transition-all p-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-semibold text-gray-900 mb-1">{tournament.TOUR_NAME}</h3>
-                          <div className="flex items-center space-x-3 text-sm text-gray-600">
-                            <span className="bg-gray-100 px-2 py-1 rounded">{tournament.TOUR_KIND}</span>
-                            <span>{getTypeText(tournament.TOUR_TYPE)}</span>
-                            <span>{tournament.TOUR_CITY}</span>
-                          </div>
-                          <div className="text-sm text-gray-500 mt-1">
-                            {new Date(tournament.TOUR_SDAT).toLocaleDateString('it-IT')}
-                            {tournament.TOUR_EDAT && ` - ${new Date(tournament.TOUR_EDAT).toLocaleDateString('it-IT')}`}
-                          </div>
-                        </div>
-                        <span className={`px-2 py-1 rounded-lg text-sm ${getStatusColor(tournament.TOUR_STAT)}`}>
-                          {getStatusText(tournament.TOUR_STAT)}
-                        </span>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4 mt-4">
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-gray-900">
-                            0/{tournament.TOUR_MTEA}
-                          </div>
-                          <div className="text-xs text-gray-500">Squadre</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-lg font-semibold text-green-600">
-                            €{tournament.TOUR_EFEE || 0}
-                          </div>
-                          <div className="text-xs text-gray-500">Quota</div>
-                        </div>
-                        <div className="text-center">
-                          <Button size="sm" variant="outline">
-                            Gestisci
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="mt-3">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `0%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </motion.div>
-
-        {/* Recent Activity */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-        >
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Attività Recente</h2>
-          <Card className="p-4">
-            <div className="space-y-3">
-              {tournaments.length > 0 ? (
-                <>
-                  <div className="flex items-center space-x-3">
-                    <Trophy className="w-5 h-5 text-blue-500" />
-                    <span className="text-gray-700">Torneo "{tournaments[0]?.TOUR_NAME}" creato</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                    <span className="text-gray-700">
-                      Prossimo torneo: {tournaments[0] && new Date(tournaments[0].TOUR_SDAT).toLocaleDateString('it-IT')}
-                    </span>
-                  </div>
-                </>
+    <Layout>
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="relative">
+              {user?.avatar_url ? (
+                <img
+                  src={user.avatar_url}
+                  alt="Profile"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
+                />
               ) : (
-                <div className="text-center text-gray-500 py-4">
-                  Nessuna attività recente
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center border-2 border-green-500">
+                  <User className="h-8 w-8 text-green-600" />
                 </div>
               )}
             </div>
-          </Card>
-        </motion.div>
-      </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Benvenuto, {user?.nome} {user?.cognome}!
+              </h1>
+              <p className="text-gray-600">Pannello Organizzatore</p>
+            </div>
+          </div>
+          <Button onClick={() => navigate('/organizer/create')} className="bg-green-600 hover:bg-green-700">
+            <Plus className="h-4 w-4 mr-2" />
+            Crea Torneo
+          </Button>
+        </div>
 
-      <BottomNavigation />
-    </div>
+        <div className="p-6 space-y-6">
+          {/* Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Link to="/organizer/create">
+              <Button className="w-full flex items-center justify-center space-x-2" size="lg">
+                <Plus className="w-5 h-5" />
+                <span>Crea Nuovo Torneo</span>
+              </Button>
+            </Link>
+          </motion.div>
+
+          {/* My Tournaments */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-4">I Miei Tornei</h2>
+            
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="text-gray-500">Caricamento tornei...</div>
+              </div>
+            ) : tournaments.length === 0 ? (
+              <Card className="p-6 text-center">
+                <Trophy className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Nessun torneo creato</h3>
+                <p className="text-gray-600 mb-4">Inizia creando il tuo primo torneo!</p>
+                <Link to="/organizer/create">
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Crea Torneo
+                  </Button>
+                </Link>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {tournaments.map((tournament, index) => (
+                  <motion.div
+                    key={tournament.TOUR_UUID}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                  >
+                    <Link to={`/organizer/tournament/${tournament.TOUR_UUID}`}>
+                      <Card className="hover:shadow-xl transition-all p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-semibold text-gray-900 mb-1">{tournament.TOUR_NAME}</h3>
+                            <div className="flex items-center space-x-3 text-sm text-gray-600">
+                              <span className="bg-gray-100 px-2 py-1 rounded">{tournament.TOUR_KIND}</span>
+                              <span>{getTypeText(tournament.TOUR_TYPE)}</span>
+                              <span>{tournament.TOUR_CITY}</span>
+                            </div>
+                            <div className="text-sm text-gray-500 mt-1">
+                              {new Date(tournament.TOUR_SDAT).toLocaleDateString('it-IT')}
+                              {tournament.TOUR_EDAT && ` - ${new Date(tournament.TOUR_EDAT).toLocaleDateString('it-IT')}`}
+                            </div>
+                          </div>
+                          <span className={`px-2 py-1 rounded-lg text-sm ${getStatusColor(tournament.TOUR_STAT)}`}>
+                            {getStatusText(tournament.TOUR_STAT)}
+                          </span>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+                          <div className="text-center">
+                            <div className="text-lg font-semibold text-gray-900">
+                              0/{tournament.TOUR_MTEA}
+                            </div>
+                            <div className="text-xs text-gray-500">Squadre</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-semibold text-green-600">
+                              €{tournament.TOUR_EFEE || 0}
+                            </div>
+                            <div className="text-xs text-gray-500">Quota</div>
+                          </div>
+                          <div className="text-center">
+                            <Button size="sm" variant="outline">
+                              Gestisci
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-3">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `0%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+
+          {/* Recent Activity */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Attività Recente</h2>
+            <Card className="p-4">
+              <div className="space-y-3">
+                {tournaments.length > 0 ? (
+                  <>
+                    <div className="flex items-center space-x-3">
+                      <Trophy className="w-5 h-5 text-blue-500" />
+                      <span className="text-gray-700">Torneo "{tournaments[0]?.TOUR_NAME}" creato</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-5 h-5 text-green-500" />
+                      <span className="text-gray-700">
+                        Prossimo torneo: {tournaments[0] && new Date(tournaments[0].TOUR_SDAT).toLocaleDateString('it-IT')}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center text-gray-500 py-4">
+                    Nessuna attività recente
+                  </div>
+                )}
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+
+        <BottomNavigation />
+      </div>
+    </Layout>
   );
 };
 

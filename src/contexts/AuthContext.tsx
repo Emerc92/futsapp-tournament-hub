@@ -111,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log('Fetching user profile for:', userId);
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('FUTAUSER')
         .select('*')
         .eq('USER_UUID', userId)
@@ -132,8 +132,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           cognome: data.USER_COGN,
           email: data.USER_MAIL,
           telefono: data.USER_TELL,
-          role: data.USER_ROLE === 'organizer' ? 'organizer' : 'player',
-          avatar_url: data.USER_AURL,
+          role: data.USER_ROLE === 'O' ? 'organizer' as const : 'player' as const,
+          avatar_url: data.USER_IURL,
           created_at: data.USER_DCRE,
           numero_documento: data.USER_CFIS,
           data_nascita: data.USER_DNAS
@@ -215,7 +215,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           avatarUrl = await uploadAvatar(userData.foto, authData.user.id);
         }
         
-        // Insert user data into FUTAUSER table
+        // Insert user data into FUTAUSER table with correct field mapping
         const { error: insertError } = await supabase
           .from('FUTAUSER')
           .insert({
@@ -226,8 +226,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             USER_TELL: userData.telefono,
             USER_CFIS: userData.numero_documento,
             USER_DNAS: userData.data_nascita,
-            USER_ROLE: userData.role,
-            USER_AURL: avatarUrl
+            USER_ROLE: userData.role === 'organizer' ? 'O' : 'P',
+            USER_IURL: avatarUrl
           });
 
         if (insertError) {

@@ -315,12 +315,12 @@ export type Database = {
       }
       FUTAUSER: {
         Row: {
-          USER_AURL: string | null
           USER_CFIS: string
           USER_COGN: string
           USER_DCRE: string | null
           USER_DNAS: string
           USER_DUPD: string | null
+          USER_IURL: string | null
           USER_MAIL: string
           USER_NAME: string
           USER_ROLE: Database["public"]["Enums"]["user_role"]
@@ -328,12 +328,12 @@ export type Database = {
           USER_UUID: string
         }
         Insert: {
-          USER_AURL?: string | null
           USER_CFIS: string
           USER_COGN: string
           USER_DCRE?: string | null
           USER_DNAS: string
           USER_DUPD?: string | null
+          USER_IURL?: string | null
           USER_MAIL: string
           USER_NAME: string
           USER_ROLE?: Database["public"]["Enums"]["user_role"]
@@ -341,12 +341,12 @@ export type Database = {
           USER_UUID?: string
         }
         Update: {
-          USER_AURL?: string | null
           USER_CFIS?: string
           USER_COGN?: string
           USER_DCRE?: string | null
           USER_DNAS?: string
           USER_DUPD?: string | null
+          USER_IURL?: string | null
           USER_MAIL?: string
           USER_NAME?: string
           USER_ROLE?: Database["public"]["Enums"]["user_role"]
