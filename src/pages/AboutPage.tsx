@@ -64,7 +64,7 @@ const AboutPage: React.FC = () => {
             <p className="text-gray-700 mb-8 text-lg leading-relaxed">
               Così è nata FutsApp: una piattaforma pensata da giocatori per giocatori, 
               che semplifica ogni aspetto dell'organizzazione di tornei di calcio. 
-              Dal calcio a 5 al calcio a 11, dalla Serie A amatoriale al torneo tra amici: 
+              Dai campionati su scala nazionale al torneo tra amici: 
               FutsApp è la casa digitale dei tornei amatoriali.
             </p>
           </div>
