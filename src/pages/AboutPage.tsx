@@ -37,7 +37,7 @@ const AboutPage: React.FC = () => {
             Chi siamo
           </h1>
           <p className="text-xl text-gray-600 mb-8">
-            La storia di FutsApp: dall'idea alla piattaforma che rivoluziona i tornei di calcio
+            La storia di FutsApp: dall'idea alla piattaforma che rivoluziona i tornei di calcio amatoriali
           </p>
         </div>
       </section>
@@ -63,7 +63,7 @@ const AboutPage: React.FC = () => {
 
             <p className="text-gray-700 mb-8 text-lg leading-relaxed">
               Così è nata FutsApp: una piattaforma pensata da giocatori per giocatori, 
-              che semplifica ogni aspetto dell'organizzazione di tornei di calcio. 
+              che semplifica ogni aspetto dell'organizzazione di tornei di calcio amatoriali. 
               Dai campionati su scala nazionale al torneo tra amici: 
               FutsApp è la casa digitale dei tornei amatoriali.
             </p>
