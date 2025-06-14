@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, ArrowLeft } from 'lucide-react';
+import { Loader2, ArrowLeft, Upload, X } from 'lucide-react';
 import Logo from '@/components/ui/logo';
 
 interface FormData {
@@ -17,6 +18,7 @@ interface FormData {
   password: string;
   confirmPassword: string;
   role: 'player' | 'organizer';
+  foto: File | null;
 }
 
 const RegisterPage: React.FC = () => {
@@ -31,9 +33,11 @@ const RegisterPage: React.FC = () => {
     telefono: '',
     password: '',
     confirmPassword: '',
-    role: 'player'
+    role: 'player',
+    foto: null
   });
   const [error, setError] = useState('');
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -81,7 +85,8 @@ const RegisterPage: React.FC = () => {
         email: formData.email,
         telefono: formData.telefono,
         role: formData.role,
-        password: formData.password
+        password: formData.password,
+        foto: formData.foto
       });
       // Redirect is handled automatically in AuthContext
     } catch (error: any) {
@@ -94,6 +99,36 @@ const RegisterPage: React.FC = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validazione del file
+      if (file.size > 5 * 1024 * 1024) { // 5MB max
+        setError('La foto deve essere massimo 5MB');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError('Seleziona solo file immagine');
+        return;
+      }
+
+      setFormData({ ...formData, foto: file });
+      
+      // Crea preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewUrl(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removePhoto = () => {
+    setFormData({ ...formData, foto: null });
+    setPreviewUrl(null);
   };
 
   return (
@@ -127,6 +162,49 @@ const RegisterPage: React.FC = () => {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
+
+              {/* Foto Profilo */}
+              <div className="text-center">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Foto Profilo
+                </label>
+                {previewUrl ? (
+                  <div className="relative inline-block">
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
+                      className="w-24 h-24 rounded-full object-cover border-2 border-gray-300"
+                    />
+                    <button
+                      type="button"
+                      onClick={removePhoto}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id="foto"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      disabled={loading}
+                    />
+                    <label
+                      htmlFor="foto"
+                      className="inline-flex items-center justify-center w-24 h-24 border-2 border-dashed border-gray-300 rounded-full cursor-pointer hover:border-green-500 hover:bg-green-50 transition-colors"
+                    >
+                      <Upload className="h-6 w-6 text-gray-400" />
+                    </label>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Opzionale - Max 5MB
+                </p>
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>

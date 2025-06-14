@@ -34,6 +34,7 @@ interface RegisterData {
   telefono: string;
   role: 'player' | 'organizer';
   password: string;
+  foto?: File | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -79,13 +80,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
+  const uploadAvatar = async (file: File, userId: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${userId}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          upsert: true
+        });
+
+      if (uploadError) {
+        console.error('Error uploading avatar:', uploadError);
+        return null;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      return null;
+    }
+  };
+
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log('Fetching user profile for:', userId);
       const { data, error } = await (supabase as any)
-        .from('users')
+        .from('FUTAUSER')
         .select('*')
-        .eq('id', userId)
+        .eq('USER_UUID', userId)
         .single();
 
       if (error) {
@@ -98,16 +127,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else if (data) {
         console.log('User profile fetched:', data);
         const userProfile = {
-          id: data.id,
-          nome: data.nome,
-          cognome: data.cognome,
-          email: data.email,
-          telefono: data.telefono,
-          role: data.role,
-          avatar_url: data.avatar_url,
-          created_at: data.created_at,
-          numero_documento: data.documento,
-          data_nascita: data.dob
+          id: data.USER_UUID,
+          nome: data.USER_NAME,
+          cognome: data.USER_COGN,
+          email: data.USER_MAIL,
+          telefono: data.USER_TELL,
+          role: data.USER_ROLE === 'organizer' ? 'organizer' : 'player',
+          avatar_url: data.USER_AURL,
+          created_at: data.USER_DCRE,
+          numero_documento: data.USER_CFIS,
+          data_nascita: data.USER_DNAS
         };
         setUser(userProfile);
         
@@ -160,20 +189,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Attempting registration for:', userData.email);
       
-      // First, create the user in Auth with correct metadata field names matching the trigger
+      // First, create the user in Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
         options: {
           emailRedirectTo: `${window.location.origin}/`,
-          data: {
-            nome: userData.nome,
-            cognome: userData.cognome,
-            documento: userData.numero_documento,
-            dob: userData.data_nascita,
-            telefono: userData.telefono,
-            role: userData.role
-          }
         }
       });
 
@@ -188,10 +209,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (authData.user) {
         console.log('Auth user created:', authData.user.id);
         
-        // Wait a moment for the trigger to complete
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Upload avatar if provided
+        let avatarUrl = null;
+        if (userData.foto) {
+          avatarUrl = await uploadAvatar(userData.foto, authData.user.id);
+        }
         
-        // The trigger will automatically create the user profile
+        // Insert user data into FUTAUSER table
+        const { error: insertError } = await supabase
+          .from('FUTAUSER')
+          .insert({
+            USER_UUID: authData.user.id,
+            USER_NAME: userData.nome,
+            USER_COGN: userData.cognome,
+            USER_MAIL: userData.email,
+            USER_TELL: userData.telefono,
+            USER_CFIS: userData.numero_documento,
+            USER_DNAS: userData.data_nascita,
+            USER_ROLE: userData.role,
+            USER_AURL: avatarUrl
+          });
+
+        if (insertError) {
+          console.error('Error inserting user profile:', insertError);
+          throw new Error('Errore durante la creazione del profilo');
+        }
+
         await fetchUserProfile(authData.user.id);
         toast({
           title: "Registrazione completata",
