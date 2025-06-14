@@ -249,6 +249,7 @@ export type Database = {
           TOUR_DUPD: string | null
           TOUR_EDAT: string
           TOUR_EFEE: number | null
+          TOUR_KIND: string | null
           TOUR_LOGO: string | null
           TOUR_MTEA: number
           TOUR_NAME: string
@@ -268,6 +269,7 @@ export type Database = {
           TOUR_DUPD?: string | null
           TOUR_EDAT: string
           TOUR_EFEE?: number | null
+          TOUR_KIND?: string | null
           TOUR_LOGO?: string | null
           TOUR_MTEA: number
           TOUR_NAME: string
@@ -287,6 +289,7 @@ export type Database = {
           TOUR_DUPD?: string | null
           TOUR_EDAT?: string
           TOUR_EFEE?: number | null
+          TOUR_KIND?: string | null
           TOUR_LOGO?: string | null
           TOUR_MTEA?: number
           TOUR_NAME?: string

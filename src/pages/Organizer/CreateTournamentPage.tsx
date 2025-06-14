@@ -5,21 +5,28 @@ import { ArrowLeft, MapPin, Calendar, Users, Trophy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const CreateTournamentPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    type: '5v5',
-    location: '',
+    type: 'elimination',
+    kind: '5v5',
+    city: '',
     startDate: '',
     endDate: '',
-    fee: '',
+    entryFee: '',
+    matchPrice: '',
     maxTeams: '',
     description: '',
     rules: '',
-    prizes: ''
+    logo: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -34,16 +41,57 @@ const CreateTournamentPage: React.FC = () => {
     setLoading(true);
 
     try {
-      // Mock API call - replace with actual Supabase call
-      console.log('Creating tournament:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Navigate to organizer home
+      if (!user) {
+        throw new Error('Utente non autenticato');
+      }
+
+      // Validazione campi obbligatori
+      if (!formData.name || !formData.city || !formData.startDate || !formData.maxTeams) {
+        throw new Error('Compila tutti i campi obbligatori');
+      }
+
+      // Inserimento nella tabella FUTATOUR
+      const { data, error } = await supabase
+        .from('FUTATOUR')
+        .insert({
+          TOUR_NAME: formData.name,
+          TOUR_CITY: formData.city,
+          TOUR_TYPE: formData.type,
+          TOUR_KIND: formData.kind,
+          TOUR_STAT: 'open',
+          TOUR_SDAT: formData.startDate,
+          TOUR_EDAT: formData.endDate || null,
+          TOUR_RDAT: new Date().toISOString(),
+          TOUR_EFEE: formData.entryFee ? parseFloat(formData.entryFee) : 0,
+          TOUR_PMAT: formData.matchPrice ? parseFloat(formData.matchPrice) : 0,
+          TOUR_MTEA: parseInt(formData.maxTeams),
+          TOUR_NOTE: formData.description || null,
+          TOUR_RULE: formData.rules ? { rules: formData.rules } : null,
+          TOUR_LOGO: formData.logo || null,
+          TOUR_ORGS_UUID: user.id
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Errore inserimento torneo:', error);
+        throw new Error('Errore durante la creazione del torneo');
+      }
+
+      toast({
+        title: "Torneo creato con successo!",
+        description: `Il torneo "${formData.name}" è stato creato.`,
+      });
+
+      // Naviga alla home dell'organizzatore
       navigate('/home/organizer');
-    } catch (error) {
-      console.error('Error creating tournament:', error);
+    } catch (error: any) {
+      console.error('Errore:', error);
+      toast({
+        title: "Errore",
+        description: error.message || 'Si è verificato un errore durante la creazione del torneo',
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
@@ -105,29 +153,47 @@ const CreateTournamentPage: React.FC = () => {
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         required
                       >
+                        <option value="elimination">Eliminazione Diretta</option>
+                        <option value="round_robin">Girone all'Italiana</option>
+                        <option value="mixed">Misto</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="kind" className="block text-sm font-medium text-gray-700 mb-2">
+                        Formato *
+                      </label>
+                      <select
+                        id="kind"
+                        name="kind"
+                        value={formData.kind}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required
+                      >
                         <option value="5v5">Calcio a 5</option>
                         <option value="7v7">Calcio a 7</option>
                         <option value="11v11">Calcio a 11</option>
                       </select>
                     </div>
+                  </div>
 
-                    <div>
-                      <label htmlFor="maxTeams" className="block text-sm font-medium text-gray-700 mb-2">
-                        Max Squadre *
-                      </label>
-                      <input
-                        id="maxTeams"
-                        name="maxTeams"
-                        type="number"
-                        value={formData.maxTeams}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        placeholder="16"
-                        min="4"
-                        max="32"
-                        required
-                      />
-                    </div>
+                  <div>
+                    <label htmlFor="maxTeams" className="block text-sm font-medium text-gray-700 mb-2">
+                      Max Squadre *
+                    </label>
+                    <input
+                      id="maxTeams"
+                      name="maxTeams"
+                      type="number"
+                      value={formData.maxTeams}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="16"
+                      min="4"
+                      max="32"
+                      required
+                    />
                   </div>
                 </div>
               </div>
@@ -141,17 +207,17 @@ const CreateTournamentPage: React.FC = () => {
                 
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-                      Luogo *
+                    <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                      Città *
                     </label>
                     <input
-                      id="location"
-                      name="location"
+                      id="city"
+                      name="city"
                       type="text"
-                      value={formData.location}
+                      value={formData.city}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Es. Centro Sportivo Roma Nord"
+                      placeholder="Es. Roma"
                       required
                     />
                   </div>
@@ -164,7 +230,7 @@ const CreateTournamentPage: React.FC = () => {
                       <input
                         id="startDate"
                         name="startDate"
-                        type="date"
+                        type="datetime-local"
                         value={formData.startDate}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -179,7 +245,7 @@ const CreateTournamentPage: React.FC = () => {
                       <input
                         id="endDate"
                         name="endDate"
-                        type="date"
+                        type="datetime-local"
                         value={formData.endDate}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -193,24 +259,43 @@ const CreateTournamentPage: React.FC = () => {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Users className="w-5 h-5 mr-2 text-yellow-600" />
-                  Quota di Partecipazione
+                  Costi
                 </h3>
                 
-                <div>
-                  <label htmlFor="fee" className="block text-sm font-medium text-gray-700 mb-2">
-                    Quota per squadra (€) *
-                  </label>
-                  <input
-                    id="fee"
-                    name="fee"
-                    type="number"
-                    value={formData.fee}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="50"
-                    min="0"
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="entryFee" className="block text-sm font-medium text-gray-700 mb-2">
+                      Quota Iscrizione (€)
+                    </label>
+                    <input
+                      id="entryFee"
+                      name="entryFee"
+                      type="number"
+                      step="0.01"
+                      value={formData.entryFee}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="50.00"
+                      min="0"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="matchPrice" className="block text-sm font-medium text-gray-700 mb-2">
+                      Prezzo per Partita (€)
+                    </label>
+                    <input
+                      id="matchPrice"
+                      name="matchPrice"
+                      type="number"
+                      step="0.01"
+                      value={formData.matchPrice}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="10.00"
+                      min="0"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -232,7 +317,7 @@ const CreateTournamentPage: React.FC = () => {
                       onChange={handleInputChange}
                       rows={3}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Descrivi il torneo, il tipo di squadre che possono partecipare, ecc."
+                      placeholder="Descrivi il torneo..."
                     />
                   </div>
 
@@ -252,17 +337,17 @@ const CreateTournamentPage: React.FC = () => {
                   </div>
 
                   <div>
-                    <label htmlFor="prizes" className="block text-sm font-medium text-gray-700 mb-2">
-                      Premi
+                    <label htmlFor="logo" className="block text-sm font-medium text-gray-700 mb-2">
+                      URL Logo
                     </label>
-                    <textarea
-                      id="prizes"
-                      name="prizes"
-                      value={formData.prizes}
+                    <input
+                      id="logo"
+                      name="logo"
+                      type="url"
+                      value={formData.logo}
                       onChange={handleInputChange}
-                      rows={2}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="1° posto: €500, 2° posto: €300, 3° posto: €100"
+                      placeholder="https://example.com/logo.png"
                     />
                   </div>
                 </div>
