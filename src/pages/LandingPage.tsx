@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Users, Calendar, Star } from 'lucide-react';
+import { Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/ui/logo';
@@ -12,23 +12,10 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-gradient-to-r from-green-600 to-blue-600 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Logo size="md" variant="full" />
-            <div className="flex space-x-4">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/login')}
-              >
-                Accedi
-              </Button>
-              <Button 
-                onClick={() => navigate('/register')}
-              >
-                Inizia Gratis
-              </Button>
-            </div>
+          <div className="flex justify-center items-center py-6">
+            <Logo size="md" variant="full" className="text-white" />
           </div>
         </div>
       </header>
@@ -54,7 +41,6 @@ const LandingPage: React.FC = () => {
               className="text-lg px-8 py-4"
             >
               Inizia Gratis
-              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button 
               size="lg" 
@@ -150,15 +136,6 @@ const LandingPage: React.FC = () => {
           <p className="text-xl text-green-100 mb-8">
             Unisciti alla community di FutsApp e scopri tornei nella tua zona
           </p>
-          <Button 
-            size="lg" 
-            variant="secondary"
-            onClick={() => navigate('/register')}
-            className="text-lg px-8 py-4"
-          >
-            Registrati Ora
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
         </div>
       </section>
 
