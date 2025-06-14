@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
+import Logo from '@/components/ui/logo';
 
 interface FormData {
   nome: string;
@@ -97,8 +97,22 @@ const RegisterPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Header with back button and logo */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-green-600 hover:text-green-700"
+            disabled={loading}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Torna alla Home
+          </Button>
+          <Logo size="sm" variant="icon" />
+        </div>
+
         <Card>
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold">Registrati su FutsApp</CardTitle>
