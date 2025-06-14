@@ -9,6 +9,349 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      FUDAMACH: {
+        Row: {
+          MACH_AWAY_GOAL: number | null
+          MACH_CITY: string | null
+          MACH_DCRE: string | null
+          MACH_DUPD: string | null
+          MACH_HOME_GOAL: number | null
+          MACH_LOCA: string | null
+          MACH_MDAY: string | null
+          MACH_STAT: string | null
+          MACH_TEAM_UUID_AWAY: string | null
+          MACH_TEAM_UUID_HOME: string | null
+          MACH_TOUR_UUID: string
+          MACH_UUID: string
+        }
+        Insert: {
+          MACH_AWAY_GOAL?: number | null
+          MACH_CITY?: string | null
+          MACH_DCRE?: string | null
+          MACH_DUPD?: string | null
+          MACH_HOME_GOAL?: number | null
+          MACH_LOCA?: string | null
+          MACH_MDAY?: string | null
+          MACH_STAT?: string | null
+          MACH_TEAM_UUID_AWAY?: string | null
+          MACH_TEAM_UUID_HOME?: string | null
+          MACH_TOUR_UUID: string
+          MACH_UUID?: string
+        }
+        Update: {
+          MACH_AWAY_GOAL?: number | null
+          MACH_CITY?: string | null
+          MACH_DCRE?: string | null
+          MACH_DUPD?: string | null
+          MACH_HOME_GOAL?: number | null
+          MACH_LOCA?: string | null
+          MACH_MDAY?: string | null
+          MACH_STAT?: string | null
+          MACH_TEAM_UUID_AWAY?: string | null
+          MACH_TEAM_UUID_HOME?: string | null
+          MACH_TOUR_UUID?: string
+          MACH_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUDAMACH_MACH_TEAM_UUID_AWAY_fkey"
+            columns: ["MACH_TEAM_UUID_AWAY"]
+            isOneToOne: false
+            referencedRelation: "FUTATEAM"
+            referencedColumns: ["TEAM_UUID"]
+          },
+          {
+            foreignKeyName: "FUDAMACH_MACH_TEAM_UUID_HOME_fkey"
+            columns: ["MACH_TEAM_UUID_HOME"]
+            isOneToOne: false
+            referencedRelation: "FUTATEAM"
+            referencedColumns: ["TEAM_UUID"]
+          },
+          {
+            foreignKeyName: "FUDAMACH_MACH_TOUR_UUID_fkey"
+            columns: ["MACH_TOUR_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTATOUR"
+            referencedColumns: ["TOUR_UUID"]
+          },
+        ]
+      }
+      FUDANOTI: {
+        Row: {
+          NOTI_DCRE: string | null
+          NOTI_DUPD: string | null
+          NOTI_MESS: string | null
+          NOTI_ORGS_UUID: string | null
+          NOTI_TOUR_UUID: string
+          NOTI_UUID: string
+        }
+        Insert: {
+          NOTI_DCRE?: string | null
+          NOTI_DUPD?: string | null
+          NOTI_MESS?: string | null
+          NOTI_ORGS_UUID?: string | null
+          NOTI_TOUR_UUID: string
+          NOTI_UUID?: string
+        }
+        Update: {
+          NOTI_DCRE?: string | null
+          NOTI_DUPD?: string | null
+          NOTI_MESS?: string | null
+          NOTI_ORGS_UUID?: string | null
+          NOTI_TOUR_UUID?: string
+          NOTI_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUDANOTI_NOTI_ORGS_UUID_fkey"
+            columns: ["NOTI_ORGS_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTAORGS"
+            referencedColumns: ["ORGS_UUID"]
+          },
+          {
+            foreignKeyName: "FUDANOTI_NOTI_TOUR_UUID_fkey"
+            columns: ["NOTI_TOUR_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTATOUR"
+            referencedColumns: ["TOUR_UUID"]
+          },
+        ]
+      }
+      FUTAORGS: {
+        Row: {
+          ORGS_DCRE: string
+          ORGS_DUPD: string | null
+          ORGS_UUID: string
+        }
+        Insert: {
+          ORGS_DCRE?: string
+          ORGS_DUPD?: string | null
+          ORGS_UUID?: string
+        }
+        Update: {
+          ORGS_DCRE?: string
+          ORGS_DUPD?: string | null
+          ORGS_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUTAORGS_ORGS_UUID_fkey"
+            columns: ["ORGS_UUID"]
+            isOneToOne: true
+            referencedRelation: "FUTAUSER"
+            referencedColumns: ["USER_UUID"]
+          },
+        ]
+      }
+      FUTAPLAY: {
+        Row: {
+          PLAY_DCRE: string
+          PLAY_DUPD: string | null
+          PLAY_MEMB: string | null
+          PLAY_UUID: string
+        }
+        Insert: {
+          PLAY_DCRE?: string
+          PLAY_DUPD?: string | null
+          PLAY_MEMB?: string | null
+          PLAY_UUID: string
+        }
+        Update: {
+          PLAY_DCRE?: string
+          PLAY_DUPD?: string | null
+          PLAY_MEMB?: string | null
+          PLAY_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUTAPLAY_PLAY_UUID_fkey"
+            columns: ["PLAY_UUID"]
+            isOneToOne: true
+            referencedRelation: "FUTAUSER"
+            referencedColumns: ["USER_UUID"]
+          },
+        ]
+      }
+      FUTATEAM: {
+        Row: {
+          TEAM_CITY: string | null
+          TEAM_DCRE: string
+          TEAM_DUPD: string | null
+          TEAM_LOGO: string | null
+          TEAM_NCAP: string | null
+          TEAM_NOME: string
+          TEAM_UUID: string
+        }
+        Insert: {
+          TEAM_CITY?: string | null
+          TEAM_DCRE?: string
+          TEAM_DUPD?: string | null
+          TEAM_LOGO?: string | null
+          TEAM_NCAP?: string | null
+          TEAM_NOME: string
+          TEAM_UUID?: string
+        }
+        Update: {
+          TEAM_CITY?: string | null
+          TEAM_DCRE?: string
+          TEAM_DUPD?: string | null
+          TEAM_LOGO?: string | null
+          TEAM_NCAP?: string | null
+          TEAM_NOME?: string
+          TEAM_UUID?: string
+        }
+        Relationships: []
+      }
+      FUTATEAP: {
+        Row: {
+          TEAP_DCRE: string | null
+          TEAP_DUPD: string | null
+          TEAP_PLAY_ROLE: string | null
+          TEAP_PLAY_UUID: string
+          TEAP_TEAM_UUID: string
+        }
+        Insert: {
+          TEAP_DCRE?: string | null
+          TEAP_DUPD?: string | null
+          TEAP_PLAY_ROLE?: string | null
+          TEAP_PLAY_UUID: string
+          TEAP_TEAM_UUID: string
+        }
+        Update: {
+          TEAP_DCRE?: string | null
+          TEAP_DUPD?: string | null
+          TEAP_PLAY_ROLE?: string | null
+          TEAP_PLAY_UUID?: string
+          TEAP_TEAM_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUTATEAP_TEAP_PLAY_UUID_fkey"
+            columns: ["TEAP_PLAY_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTAPLAY"
+            referencedColumns: ["PLAY_UUID"]
+          },
+          {
+            foreignKeyName: "FUTATEAP_TEAP_TEAM_UUID_fkey"
+            columns: ["TEAP_TEAM_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTATEAM"
+            referencedColumns: ["TEAM_UUID"]
+          },
+        ]
+      }
+      FUTATOUR: {
+        Row: {
+          TOUR_CITY: string
+          TOUR_DCRE: string | null
+          TOUR_DUPD: string | null
+          TOUR_EDAT: string
+          TOUR_EFEE: number | null
+          TOUR_LOGO: string | null
+          TOUR_MTEA: number
+          TOUR_NAME: string
+          TOUR_NOTE: string | null
+          TOUR_ORGS_UUID: string
+          TOUR_PMAT: number | null
+          TOUR_RDAT: string
+          TOUR_RULE: Json | null
+          TOUR_SDAT: string
+          TOUR_STAT: Database["public"]["Enums"]["tournament_status"]
+          TOUR_TYPE: Database["public"]["Enums"]["tournament_type"]
+          TOUR_UUID: string
+        }
+        Insert: {
+          TOUR_CITY: string
+          TOUR_DCRE?: string | null
+          TOUR_DUPD?: string | null
+          TOUR_EDAT: string
+          TOUR_EFEE?: number | null
+          TOUR_LOGO?: string | null
+          TOUR_MTEA: number
+          TOUR_NAME: string
+          TOUR_NOTE?: string | null
+          TOUR_ORGS_UUID: string
+          TOUR_PMAT?: number | null
+          TOUR_RDAT: string
+          TOUR_RULE?: Json | null
+          TOUR_SDAT: string
+          TOUR_STAT?: Database["public"]["Enums"]["tournament_status"]
+          TOUR_TYPE: Database["public"]["Enums"]["tournament_type"]
+          TOUR_UUID?: string
+        }
+        Update: {
+          TOUR_CITY?: string
+          TOUR_DCRE?: string | null
+          TOUR_DUPD?: string | null
+          TOUR_EDAT?: string
+          TOUR_EFEE?: number | null
+          TOUR_LOGO?: string | null
+          TOUR_MTEA?: number
+          TOUR_NAME?: string
+          TOUR_NOTE?: string | null
+          TOUR_ORGS_UUID?: string
+          TOUR_PMAT?: number | null
+          TOUR_RDAT?: string
+          TOUR_RULE?: Json | null
+          TOUR_SDAT?: string
+          TOUR_STAT?: Database["public"]["Enums"]["tournament_status"]
+          TOUR_TYPE?: Database["public"]["Enums"]["tournament_type"]
+          TOUR_UUID?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "FUTATOUR_TOUR_ORGS_UUID_fkey"
+            columns: ["TOUR_ORGS_UUID"]
+            isOneToOne: false
+            referencedRelation: "FUTAORGS"
+            referencedColumns: ["ORGS_UUID"]
+          },
+        ]
+      }
+      FUTAUSER: {
+        Row: {
+          USER_AURL: string | null
+          USER_CFIS: string
+          USER_COGN: string
+          USER_DCRE: string | null
+          USER_DNAS: string
+          USER_DUPD: string | null
+          USER_MAIL: string
+          USER_NAME: string
+          USER_ROLE: Database["public"]["Enums"]["user_role"]
+          USER_TELL: string
+          USER_UUID: string
+        }
+        Insert: {
+          USER_AURL?: string | null
+          USER_CFIS: string
+          USER_COGN: string
+          USER_DCRE?: string | null
+          USER_DNAS: string
+          USER_DUPD?: string | null
+          USER_MAIL: string
+          USER_NAME: string
+          USER_ROLE?: Database["public"]["Enums"]["user_role"]
+          USER_TELL: string
+          USER_UUID?: string
+        }
+        Update: {
+          USER_AURL?: string | null
+          USER_CFIS?: string
+          USER_COGN?: string
+          USER_DCRE?: string | null
+          USER_DNAS?: string
+          USER_DUPD?: string | null
+          USER_MAIL?: string
+          USER_NAME?: string
+          USER_ROLE?: Database["public"]["Enums"]["user_role"]
+          USER_TELL?: string
+          USER_UUID?: string
+        }
+        Relationships: []
+      }
       tournament_registrations: {
         Row: {
           id: string
@@ -33,131 +376,6 @@ export type Database = {
           registration_date?: string | null
           tournament_id?: string
           user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tournament_registrations_tournament_id_fkey"
-            columns: ["tournament_id"]
-            isOneToOne: false
-            referencedRelation: "tournaments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tournament_registrations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tournaments: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          end_date: string
-          entry_fee: number | null
-          id: string
-          image_url: string | null
-          location: string
-          max_teams: number
-          name: string
-          organizer_id: string
-          prize_pool: number | null
-          registration_deadline: string
-          rules: Json | null
-          start_date: string
-          status: Database["public"]["Enums"]["tournament_status"]
-          tournament_type: Database["public"]["Enums"]["tournament_type"]
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          end_date: string
-          entry_fee?: number | null
-          id?: string
-          image_url?: string | null
-          location: string
-          max_teams: number
-          name: string
-          organizer_id: string
-          prize_pool?: number | null
-          registration_deadline: string
-          rules?: Json | null
-          start_date: string
-          status?: Database["public"]["Enums"]["tournament_status"]
-          tournament_type?: Database["public"]["Enums"]["tournament_type"]
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          end_date?: string
-          entry_fee?: number | null
-          id?: string
-          image_url?: string | null
-          location?: string
-          max_teams?: number
-          name?: string
-          organizer_id?: string
-          prize_pool?: number | null
-          registration_deadline?: string
-          rules?: Json | null
-          start_date?: string
-          status?: Database["public"]["Enums"]["tournament_status"]
-          tournament_type?: Database["public"]["Enums"]["tournament_type"]
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "tournaments_organizer_id_fkey"
-            columns: ["organizer_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      users: {
-        Row: {
-          avatar_url: string | null
-          cognome: string
-          created_at: string | null
-          dob: string
-          documento: string
-          email: string
-          id: string
-          nome: string
-          role: Database["public"]["Enums"]["user_role"]
-          telefono: string
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          cognome: string
-          created_at?: string | null
-          dob: string
-          documento: string
-          email: string
-          id: string
-          nome: string
-          role?: Database["public"]["Enums"]["user_role"]
-          telefono: string
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          cognome?: string
-          created_at?: string | null
-          dob?: string
-          documento?: string
-          email?: string
-          id?: string
-          nome?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          telefono?: string
-          updated_at?: string | null
         }
         Relationships: []
       }
