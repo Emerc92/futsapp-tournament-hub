@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,7 +12,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import Layout from '@/components/Layout';
 
 interface FormData {
   nome: string;
@@ -64,7 +64,7 @@ const CreateTournamentPage: React.FC = () => {
         TOUR_NAME: formData.nome,
         TOUR_CITY: formData.citta,
         TOUR_TYPE: formData.tipo as 'elimination' | 'round_robin' | 'mixed',
-        TOUR_STAT: 'draft' as 'draft' | 'open' | 'closed' | 'active' | 'completed',
+        TOUR_STAT: 'draft' as 'draft' | 'open' | 'closed' | 'ongoing' | 'completed' | 'cancelled',
         TOUR_RULE: formData.regole ? JSON.parse(formData.regole) : null,
         TOUR_EFEE: parseFloat(formData.costoIscrizione) || 0,
         TOUR_PMAT: parseFloat(formData.prezzoPartita) || 0,
@@ -127,8 +127,8 @@ const CreateTournamentPage: React.FC = () => {
   };
 
   return (
-    <Layout>
-      <div className="container mx-auto py-8">
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="container mx-auto max-w-2xl">
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">Crea un nuovo torneo</CardTitle>
@@ -293,7 +293,7 @@ const CreateTournamentPage: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-    </Layout>
+    </div>
   );
 };
 
