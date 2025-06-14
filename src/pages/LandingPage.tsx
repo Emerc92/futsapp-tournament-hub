@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, Calendar } from 'lucide-react';
@@ -55,7 +54,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -136,6 +135,14 @@ const LandingPage: React.FC = () => {
           <p className="text-xl text-green-100 mb-8">
             Unisciti alla community di FutsApp e scopri tornei nella tua zona
           </p>
+          <Button 
+            size="lg" 
+            variant="secondary"
+            onClick={() => navigate('/about')}
+            className="text-lg px-8 py-4"
+          >
+            Chi siamo
+          </Button>
         </div>
       </section>
 

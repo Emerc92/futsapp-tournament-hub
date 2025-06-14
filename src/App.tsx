@@ -6,6 +6,7 @@ import ProtectedRoute from './components/Auth/ProtectedRoute';
 
 // Public pages
 import LandingPage from './pages/LandingPage';
+import AboutPage from './pages/AboutPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import NotFound from './pages/NotFound';
@@ -32,6 +33,7 @@ function App() {
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
