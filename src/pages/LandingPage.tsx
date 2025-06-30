@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Users, Calendar, Trophy, Star } from 'lucide-react';
+import { Users, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Logo from '@/components/ui/logo';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,26 +12,10 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-gray-900 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Trophy className="h-8 w-8 text-green-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">FutsApp</h1>
-            </div>
-            <div className="flex space-x-4">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/login')}
-              >
-                Accedi
-              </Button>
-              <Button 
-                onClick={() => navigate('/register')}
-              >
-                Inizia Gratis
-              </Button>
-            </div>
+          <div className="flex justify-center items-center py-6">
+            <Logo size="md" variant="full" className="text-white" />
           </div>
         </div>
       </header>
@@ -38,6 +23,9 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
+          <div className="mb-8">
+            <Logo size="xl" variant="icon" className="mx-auto mb-6" />
+          </div>
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Organizza e Gestisci
             <span className="text-green-600 block">Tornei di Calcio</span>
@@ -53,7 +41,6 @@ const LandingPage: React.FC = () => {
               className="text-lg px-8 py-4"
             >
               Inizia Gratis
-              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <Button 
               size="lg" 
@@ -68,7 +55,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-blue-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
@@ -80,7 +67,7 @@ const LandingPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <Users className="h-12 w-12 text-green-600 mb-4" />
                 <CardTitle>Per Giocatori</CardTitle>
@@ -98,7 +85,7 @@ const LandingPage: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
                 <Calendar className="h-12 w-12 text-blue-600 mb-4" />
                 <CardTitle>Per Organizzatori</CardTitle>
@@ -116,9 +103,11 @@ const LandingPage: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow duration-300">
               <CardHeader>
-                <Trophy className="h-12 w-12 text-yellow-600 mb-4" />
+                <div className="h-12 w-12 text-yellow-600 mb-4 flex items-center">
+                  <Logo size="sm" variant="icon" />
+                </div>
                 <CardTitle>Funzionalità Premium</CardTitle>
                 <CardDescription>
                   Strumenti avanzati per tornei professionali
@@ -138,8 +127,9 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-green-600">
+      <section className="py-20 bg-gradient-to-r from-green-600 to-blue-600">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Logo size="lg" variant="icon" className="mx-auto mb-6 opacity-90" />
           <h2 className="text-3xl font-bold text-white mb-4">
             Pronto a iniziare?
           </h2>
@@ -149,11 +139,10 @@ const LandingPage: React.FC = () => {
           <Button 
             size="lg" 
             variant="secondary"
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/about')}
             className="text-lg px-8 py-4"
           >
-            Registrati Ora
-            <ArrowRight className="ml-2 h-5 w-5" />
+            Chi siamo
           </Button>
         </div>
       </section>
@@ -162,10 +151,7 @@ const LandingPage: React.FC = () => {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Trophy className="h-8 w-8 text-green-400 mr-3" />
-              <h3 className="text-2xl font-bold">FutsApp</h3>
-            </div>
+            <Logo size="md" variant="full" className="justify-center mb-4" />
             <p className="text-gray-400">
               La piattaforma per i tornei di calcio in Italia
             </p>

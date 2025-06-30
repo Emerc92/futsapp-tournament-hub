@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Filter, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -45,7 +44,7 @@ const TournamentSearchPage: React.FC = () => {
 
   const fetchTournaments = async () => {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('tournaments')
         .select('*')
         .eq('status', 'open')
@@ -86,7 +85,7 @@ const TournamentSearchPage: React.FC = () => {
         return;
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('tournament_registrations')
         .insert({
           tournament_id: tournamentId,
