@@ -65,7 +65,7 @@ const ProfilePage: React.FC = () => {
                 Modifica
               </Button>
             </div>
-            
+
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-500">Email</label>
@@ -77,11 +77,11 @@ const ProfilePage: React.FC = () => {
               </div>
               <div>
                 <label className="text-sm text-gray-500">Codice Fiscale</label>
-                <p className="font-medium">{user.numero_documento}</p>
+                <p className="font-medium">{user.documento}</p>
               </div>
               <div>
                 <label className="text-sm text-gray-500">Data di Nascita</label>
-                <p className="font-medium">{new Date(user.data_nascita).toLocaleDateString('it-IT')}</p>
+                <p className="font-medium">{new Date(user.dob).toLocaleDateString('it-IT')}</p>
               </div>
             </div>
           </CardContent>

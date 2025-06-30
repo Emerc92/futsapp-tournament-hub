@@ -13,8 +13,8 @@ interface User {
   role: 'player' | 'organizer';
   avatar_url?: string;
   created_at: string;
-  numero_documento: string;
-  data_nascita: string;
+  documento: string;
+  dob: string;
 }
 
 interface AuthContextType {
@@ -28,8 +28,8 @@ interface AuthContextType {
 interface RegisterData {
   nome: string;
   cognome: string;
-  numero_documento: string;
-  data_nascita: string;
+  documento: string;
+  dob: string;
   email: string;
   telefono: string;
   role: 'player' | 'organizer';
@@ -106,11 +106,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           role: data.role,
           avatar_url: data.avatar_url,
           created_at: data.created_at,
-          numero_documento: data.documento,
-          data_nascita: data.dob
+          documento: data.documento,
+          dob: data.dob
         };
         setUser(userProfile);
-        
+
         // Auto-redirect after successful login/register
         if (window.location.pathname === '/login' || window.location.pathname === '/register') {
           navigate(userProfile.role === 'player' ? '/home/player' : '/home/organizer');
@@ -159,7 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       console.log('Attempting registration for:', userData.email);
-      
+
       // First, create the user in Auth with correct metadata field names matching the trigger
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: userData.email,
@@ -169,8 +169,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: {
             nome: userData.nome,
             cognome: userData.cognome,
-            documento: userData.numero_documento,
-            dob: userData.data_nascita,
+            documento: userData.documento,
+            dob: userData.dob,
             telefono: userData.telefono,
             role: userData.role
           }
@@ -187,10 +187,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (authData.user) {
         console.log('Auth user created:', authData.user.id);
-        
+
         // Wait a moment for the trigger to complete
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // The trigger will automatically create the user profile
         await fetchUserProfile(authData.user.id);
         toast({

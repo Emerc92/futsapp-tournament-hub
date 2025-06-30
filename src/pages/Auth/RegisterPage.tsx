@@ -10,8 +10,8 @@ import { Loader2 } from 'lucide-react';
 interface FormData {
   nome: string;
   cognome: string;
-  numero_documento: string;
-  data_nascita: string;
+  documento: string;
+  dob: string;
   email: string;
   telefono: string;
   password: string;
@@ -25,8 +25,8 @@ const RegisterPage: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
     nome: '',
     cognome: '',
-    numero_documento: '',
-    data_nascita: '',
+    documento: '',
+    dob: '',
     email: '',
     telefono: '',
     password: '',
@@ -76,8 +76,8 @@ const RegisterPage: React.FC = () => {
       await register({
         nome: formData.nome,
         cognome: formData.cognome,
-        numero_documento: formData.numero_documento,
-        data_nascita: formData.data_nascita,
+        documento: formData.documento,
+        dob: formData.dob,
         email: formData.email,
         telefono: formData.telefono,
         role: formData.role,
@@ -148,32 +148,32 @@ const RegisterPage: React.FC = () => {
               </div>
 
               <div>
-                <label htmlFor="numero_documento" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="documento" className="block text-sm font-medium text-gray-700 mb-1">
                   Codice Fiscale *
                 </label>
                 <input
                   type="text"
-                  id="numero_documento"
-                  name="numero_documento"
+                  id="documento"
+                  name="documento"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.numero_documento}
+                  value={formData.documento}
                   onChange={handleChange}
                   disabled={loading}
                 />
               </div>
 
               <div>
-                <label htmlFor="data_nascita" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="dob" className="block text-sm font-medium text-gray-700 mb-1">
                   Data di Nascita *
                 </label>
                 <input
                   type="date"
-                  id="data_nascita"
-                  name="data_nascita"
+                  id="dob"
+                  name="dob"
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  value={formData.data_nascita}
+                  value={formData.dob}
                   onChange={handleChange}
                   disabled={loading}
                 />
@@ -263,8 +263,8 @@ const RegisterPage: React.FC = () => {
                 </select>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={loading}
               >
